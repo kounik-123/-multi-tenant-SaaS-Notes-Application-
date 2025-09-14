@@ -5,30 +5,30 @@
       "runtime": "nodejs18.x"
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
     },
     {
-      "src": "/(.*\\.(css|js|html|png|jpg|jpeg|gif|svg|ico))",
-      "dest": "/public/$1"
+      "source": "/(.*\\.(css|js|html|png|jpg|jpeg|gif|svg|ico))",
+      "destination": "/public/$1"
     },
     {
-      "src": "/",
-      "dest": "/public/index.html"
+      "source": "/",
+      "destination": "/public/index.html"
     },
     {
-      "src": "/dashboard",
-      "dest": "/public/dashboard.html"
+      "source": "/dashboard",
+      "destination": "/public/dashboard.html"
     },
     {
-      "src": "/upgrade",
-      "dest": "/public/upgrade.html"
+      "source": "/upgrade",
+      "destination": "/public/upgrade.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/api/index.js"
+      "source": "/(.*)",
+      "destination": "/api/index.js"
     }
   ],
   "headers": [
