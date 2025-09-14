@@ -1,0 +1,23 @@
+{
+  "name": "multi-tenant-notes-saas",
+  "version": "1.0.0",
+  "description": "Multi-tenant SaaS Notes Application with Express.js and Vercel deployment",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "node api/index.js",
+    "vercel-build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "sqlite3": "^5.1.6",
+    "serverless-http": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  },
+  "keywords": ["saas", "multi-tenant", "notes", "express", "vercel"]
+}

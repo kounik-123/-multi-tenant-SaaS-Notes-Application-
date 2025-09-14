@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade to Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Upgrade Subscription</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                        ← Back to Dashboard
+                    </a>
+                    <button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Current Plan Info -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Current Subscription</h2>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600" id="currentPlan"></p>
+                    <p class="text-sm text-gray-500" id="tenantInfo"></p>
+                </div>
+                <div id="currentPlanBadge" class="px-3 py-1 rounded-full text-sm font-medium"></div>
+            </div>
+        </div>
+
+        <!-- Upgrade Options -->
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Free Plan -->
+            <div class="bg-white rounded-lg shadow-md p-6 border-2 border-gray-200">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Free Plan</h3>
+                    <div class="text-3xl font-bold text-gray-600 mb-4">$0<span class="text-lg font-normal">/month</span></div>
+                    <ul class="text-left space-y-3 mb-6">
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Up to 3 notes
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Basic note management
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Multi-tenant support
+                        </li>
+                    </ul>
+                    <button disabled class="w-full bg-gray-300 text-gray-500 py-2 px-4 rounded-md cursor-not-allowed">
+                        Current Plan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="bg-white rounded-lg shadow-md p-6 border-2 border-blue-500 relative">
+                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span class="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">Recommended</span>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Pro Plan</h3>
+                    <div class="text-3xl font-bold text-blue-600 mb-4">$9<span class="text-lg font-normal">/month</span></div>
+                    <ul class="text-left space-y-3 mb-6">
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Unlimited notes
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Advanced note management
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Priority support
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Multi-tenant support
+                        </li>
+                    </ul>
+                    <button id="upgradeBtn" 
+                            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200 flex items-center justify-center">
+                        <span id="upgradeText">Upgrade to Pro</span>
+                        <div id="upgradeSpinner" class="hidden ml-2">
+                            <div class="spinner"></div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden mt-8 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span>Successfully upgraded to Pro plan! You now have unlimited notes.</span>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden mt-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md"></div>
+    </div>
+
+    <script>
+        let user = null;
+        let token = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            token = localStorage.getItem('token');
+            const userData = localStorage.getItem('user');
+
+            if (!token || !userData) {
+                window.location.href = '/';
+                return;
+            }
+
+            user = JSON.parse(userData);
+            
+            // Update UI with user info
+            document.getElementById('tenantInfo').textContent = user.tenantName;
+            
+            const currentPlan = document.getElementById('currentPlan');
+            const currentPlanBadge = document.getElementById('currentPlanBadge');
+            const upgradeBtn = document.getElementById('upgradeBtn');
+            
+            if (user.subscriptionPlan === 'pro') {
+                currentPlan.textContent = 'You are currently on the Pro plan with unlimited notes.';
+                currentPlanBadge.textContent = 'PRO';
+                currentPlanBadge.className = 'px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800';
+                upgradeBtn.disabled = true;
+                upgradeBtn.textContent = 'Already on Pro';
+                upgradeBtn.className = 'w-full bg-gray-300 text-gray-500 py-2 px-4 rounded-md cursor-not-allowed';
+            } else {
+                currentPlan.textContent = 'You are currently on the Free plan (limited to 3 notes).';
+                currentPlanBadge.textContent = 'FREE';
+                currentPlanBadge.className = 'px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800';
+            }
+
+            // Check if user is admin
+            if (user.role !== 'admin') {
+                upgradeBtn.disabled = true;
+                upgradeBtn.textContent = 'Admin Access Required';
+                upgradeBtn.className = 'w-full bg-gray-300 text-gray-500 py-2 px-4 rounded-md cursor-not-allowed';
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        });
+
+        // Upgrade button functionality
+        document.getElementById('upgradeBtn').addEventListener('click', async () => {
+            if (user.role !== 'admin' || user.subscriptionPlan === 'pro') {
+                return;
+            }
+
+            const upgradeBtn = document.getElementById('upgradeBtn');
+            const upgradeText = document.getElementById('upgradeText');
+            const upgradeSpinner = document.getElementById('upgradeSpinner');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Show loading state
+            upgradeBtn.disabled = true;
+            upgradeText.textContent = 'Upgrading...';
+            upgradeSpinner.classList.remove('hidden');
+            successMessage.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+
+            try {
+                const response = await fetch(`/tenants/${user.tenantSlug}/upgrade`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update user data and token
+                    user.subscriptionPlan = 'pro';
+                    localStorage.setItem('user', JSON.stringify(user));
+                    
+                    // Update token if provided
+                    if (data.token) {
+                        token = data.token;
+                        localStorage.setItem('token', token);
+                    }
+                    
+                    // Show success message
+                    successMessage.classList.remove('hidden');
+                    
+                    // Update UI
+                    document.getElementById('currentPlan').textContent = 'You are currently on the Pro plan with unlimited notes.';
+                    const currentPlanBadge = document.getElementById('currentPlanBadge');
+                    currentPlanBadge.textContent = 'PRO';
+                    currentPlanBadge.className = 'px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800';
+                    
+                    upgradeBtn.textContent = 'Already on Pro';
+                    upgradeBtn.className = 'w-full bg-gray-300 text-gray-500 py-2 px-4 rounded-md cursor-not-allowed';
+                } else {
+                    throw new Error(data.error || 'Upgrade failed');
+                }
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                errorMessage.classList.remove('hidden');
+                
+                // Reset loading state
+                upgradeBtn.disabled = false;
+                upgradeText.textContent = 'Upgrade to Pro';
+                upgradeSpinner.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
