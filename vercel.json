@@ -7,12 +7,12 @@
   },
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/:path*",
       "destination": "/api/index.js"
     },
     {
-      "source": "/(.*\\.(css|js|html|png|jpg|jpeg|gif|svg|ico))",
-      "destination": "/public/$1"
+      "source": "/:path*.(css|js|html|png|jpg|jpeg|gif|svg|ico)",
+      "destination": "/public/:path*.$1"
     },
     {
       "source": "/",
@@ -27,13 +27,13 @@
       "destination": "/public/upgrade.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "/api/index.js"
     }
   ],
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/:path*",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
