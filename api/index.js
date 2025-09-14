@@ -12,8 +12,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-i
 // Middleware
 app.use(cors());
 app.use(express.json());
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, '../public')));
+// Note: static files are served automatically by Vercel from the top-level `public/` folder.
+// Avoid serving static files from inside the serverless function to keep the bundle small.
 
 // Database Path
 const dbPath = process.env.NODE_ENV === 'production' 
@@ -99,12 +99,20 @@ app.post('/auth/login', (req, res) => {
 
 // ... (Rest of the Express routes)
 
-// Vercel Handler with DB initialization check
-const handler = serverless(async (req, res) => {
-  // Ensure DB is initialized before handling the request
-  await initializeDb();
-  return app(req, res);
+// Ensure DB is initialized before handling requests in the serverless environment.
+// This middleware makes sure the DB is ready for every request (first call will initialize).
+app.use(async (req, res, next) => {
+  try {
+    if (!db) await initializeDb();
+    return next();
+  } catch (err) {
+    console.error('DB initialization failed:', err);
+    return res.status(500).json({ error: 'Database initialization failed' });
+  }
 });
+
+// Export a standard serverless handler wrapping the Express app.
+const handler = serverless(app);
 
 // Local development
 if (process.env.NODE_ENV !== 'production') {
@@ -119,5 +127,7 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-module.exports = app;
-module.exports.handler = handler;
+// Export the serverless handler as the default export so Vercel will invoke it.
+module.exports = handler;
+// Also expose the Express app for local tests or other tooling if needed.
+module.exports.app = app;

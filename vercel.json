@@ -1,12 +1,1 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/auth/login",
-      "destination": "/api/index.js"
-    }
-  ]
-}
+{}
