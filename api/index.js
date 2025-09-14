@@ -7,74 +7,90 @@ const serverless = require('serverless-http');
 const path = require('path');
 
 const app = express();
-const JWT_SECRET = 'your-super-secret-jwt-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Initialize SQLite Database
-const db = new sqlite3.Database(':memory:');
+// Initialize SQLite Database with persistent storage
+const dbPath = process.env.NODE_ENV === 'production' 
+  ? '/tmp/notes.db'  // Vercel's temporary storage
+  : './notes.db';    // Local development
 
-// Database Schema
+const db = new sqlite3.Database(dbPath);
+
+// Database Schema with improved initialization
 db.serialize(() => {
-  // Tenants table
-  db.run(`CREATE TABLE tenants (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    slug TEXT UNIQUE NOT NULL,
-    name TEXT NOT NULL,
-    subscription_plan TEXT DEFAULT 'free',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
+  // Check if tables exist, create if they don't
+  db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='tenants'", (err, row) => {
+    if (!row) {
+      // Tables don't exist, create them
+      console.log('Creating database tables...');
+      
+      // Tenants table
+      db.run(`CREATE TABLE tenants (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        slug TEXT UNIQUE NOT NULL,
+        name TEXT NOT NULL,
+        subscription_plan TEXT DEFAULT 'free',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`);
 
-  // Users table
-  db.run(`CREATE TABLE users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    role TEXT NOT NULL,
-    tenant_id INTEGER NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (tenant_id) REFERENCES tenants (id)
-  )`);
+      // Users table
+      db.run(`CREATE TABLE users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        role TEXT NOT NULL,
+        tenant_id INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (tenant_id) REFERENCES tenants (id)
+      )`);
 
-  // Notes table
-  db.run(`CREATE TABLE notes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    content TEXT,
-    user_id INTEGER NOT NULL,
-    tenant_id INTEGER NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (tenant_id) REFERENCES tenants (id)
-  )`);
+      // Notes table
+      db.run(`CREATE TABLE notes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        content TEXT,
+        user_id INTEGER NOT NULL,
+        tenant_id INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id),
+        FOREIGN KEY (tenant_id) REFERENCES tenants (id)
+      )`);
 
-  // Subscription Requests table
-  db.run(`CREATE TABLE subscription_requests (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    tenant_id INTEGER NOT NULL,
-    status TEXT NOT NULL DEFAULT 'pending',
-    admin_comment TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (tenant_id) REFERENCES tenants (id)
-  )`);
+      // Subscription Requests table
+      db.run(`CREATE TABLE subscription_requests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        tenant_id INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        admin_comment TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id),
+        FOREIGN KEY (tenant_id) REFERENCES tenants (id)
+      )`);
 
-  // Insert test tenants
-  db.run("INSERT INTO tenants (slug, name) VALUES ('acme', 'Acme Corp')");
-  db.run("INSERT INTO tenants (slug, name) VALUES ('globex', 'Globex Inc')");
+      // Insert test tenants
+      db.run("INSERT OR IGNORE INTO tenants (slug, name) VALUES ('acme', 'Acme Corp')");
+      db.run("INSERT OR IGNORE INTO tenants (slug, name) VALUES ('globex', 'Globex Inc')");
 
-  // Insert test users (password: 'password')
-  const hashedPassword = bcrypt.hashSync('password', 10);
-  db.run("INSERT INTO users (email, password_hash, role, tenant_id) VALUES ('admin@acme.test', ?, 'admin', 1)", [hashedPassword]);
-  db.run("INSERT INTO users (email, password_hash, role, tenant_id) VALUES ('user@acme.test', ?, 'member', 1)", [hashedPassword]);
-  db.run("INSERT INTO users (email, password_hash, role, tenant_id) VALUES ('admin@globex.test', ?, 'admin', 2)", [hashedPassword]);
-  db.run("INSERT INTO users (email, password_hash, role, tenant_id) VALUES ('user@globex.test', ?, 'member', 2)", [hashedPassword]);
+      // Insert test users (password: 'password')
+      const hashedPassword = bcrypt.hashSync('password', 10);
+      db.run("INSERT OR IGNORE INTO users (email, password_hash, role, tenant_id) VALUES ('admin@acme.test', ?, 'admin', 1)", [hashedPassword]);
+      db.run("INSERT OR IGNORE INTO users (email, password_hash, role, tenant_id) VALUES ('user@acme.test', ?, 'member', 1)", [hashedPassword]);
+      db.run("INSERT OR IGNORE INTO users (email, password_hash, role, tenant_id) VALUES ('admin@globex.test', ?, 'admin', 2)", [hashedPassword]);
+      db.run("INSERT OR IGNORE INTO users (email, password_hash, role, tenant_id) VALUES ('user@globex.test', ?, 'member', 2)", [hashedPassword]);
+      
+      console.log('Database initialized with test data');
+    } else {
+      console.log('Database tables already exist');
+    }
+  });
 });
 
 // Authentication Middleware
@@ -137,6 +153,7 @@ app.post('/auth/login', (req, res) => {
     WHERE u.email = ?
   `, [email], (err, user) => {
     if (err) {
+      console.error('Database error during login:', err);
       return res.status(500).json({ error: 'Database error' });
     }
 
